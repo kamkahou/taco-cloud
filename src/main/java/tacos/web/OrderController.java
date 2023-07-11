@@ -9,14 +9,20 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import tacos.TacoOrder;
 
-@Slf4j
+import tacos.TacoOrder;
+import tacos.data.OrderRepository;
+
 @Controller
 @RequestMapping("/orders")
 @SessionAttributes("tacoOrder")
 public class OrderController {
+
+    private OrderRepository orderRepo;
+
+    public OrderController(OrderRepository orderRepo) {
+        this.orderRepo = orderRepo;
+    }
 
     @GetMapping("/current")
     public String orderForm() {
@@ -30,7 +36,7 @@ public class OrderController {
             return "orderForm";
         }
         
-        log.info("Order submitted: {}", order);    //日志方式记录
+        orderRepo.save(order);
         sessionStatus.setComplete();    //清理tacoOrder会话
 
         return "redirect:/";
